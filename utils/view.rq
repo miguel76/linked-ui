@@ -1,0 +1,49 @@
+PREFIX nn:    <http://www.swows.org/xml/no-namespace#>
+PREFIX xml:   <http://www.swows.org/2013/07/xml-dom#>
+PREFIX svg:   <http://www.w3.org/2000/svg#>
+PREFIX xlink: <http://www.w3.org/1999/xlink#>
+PREFIX swi:   <http://www.swows.org/instance#>
+
+CONSTRUCT {
+
+  <#svgDoc>
+    a xml:Document ;
+    xml:hasChild <#svgElem> .
+
+  <#svgElem>
+    a svg:svg ;
+    nn:version "1.1" ;
+    nn:width "1000" ;
+    nn:height "1000" ;
+    xml:listenedEventType "touchstart", "touchmove", "touchend";
+    xml:hasChild <#input> .
+
+#  <#paperino>
+#    a svg:image ;
+#    nn:x "10" ;
+#    nn:y "10" ;
+#    nn:width "100" ;
+#    nn:height "150" ;
+#    xlink:href "http://media.tvblog.it/p/pap/paperino.jpg" .
+
+  <#input>
+    a svg:text ;
+    nn:x "150" ;
+    nn:y "100" ;
+    nn:width "300" ;
+    nn:height "200" ;
+    xml:textContent ?text .
+}
+WHERE {
+  {
+  SELECT (GROUP_CONCAT(STR(?s)) AS ?subjects)
+  WHERE {
+    GRAPH <#touches> {
+      ?s ?p ?o .
+    } .
+#    BIND(IF(isIRI(?s), CONCAT('<', STR(?s), '>'), IF(isBlank(?s), CONCAT('<', ?s, '>'), ) ) AS ?sStr)
+  }
+  }
+  BIND(CONCAT("Subjects: ", ?subjects, ".") AS ?text).
+}
+
